@@ -18,3 +18,17 @@ This API is built with NodeJS, Express and Mongodb. registered users can login,c
 - notifications [ receive notifications]
 - Deploy it on render.
 - Add more features with updates.
+
+
+### API setup
+- Clone the repository
+- cd into the root of project directory
+- run `npm install` to install package dependencies
+- create .env file at teh roo directory
+  - add your values to the following environment variables
+  - MONGO_URI=
+  - PORT=
+  - JWT_TOKEN=
+  - CLOUD_NAME=
+  - CLOUD_API_KEY=
+  - CLOUD_API_SECRET=

@@ -5,10 +5,13 @@ const postSchema = new Schema(
 	{
 		text: {
 			type: String,
+			required: true,
+			trim: true,
 		},
 		user: {
 			type: Schema.Types.ObjectId,
 			ref: "User",
+			required: true,
 		},
 		likes: [
 			{

@@ -1,10 +1,6 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-// create/ define our model
-//       crimson
-// varchar(255)
-
 const userSchema = new Schema(
 	{
 		username: {
@@ -29,6 +25,7 @@ const userSchema = new Schema(
 			required: true,
 			trim: true,
 			minLength: [8, "Please password length should not be less than 7"],
+			select: false,
 		},
 		bio: {
 			type: String,
