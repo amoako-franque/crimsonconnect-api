@@ -10,4 +10,6 @@ const notFound = (req, res, next) => {
 	next(error)
 }
 
+// error handler for jwt token error
+
 module.exports = { errorHandler, notFound }

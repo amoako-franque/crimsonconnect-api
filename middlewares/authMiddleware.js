@@ -22,12 +22,10 @@ const requireSign = async (req, res, next) => {
 	const user = await User.findById(userId)
 
 	if (!user) {
-		return res
-			.status(401)
-			.json({
-				error:
-					"Unauthorized. User not found. Please register and login to continue",
-			})
+		return res.status(401).json({
+			error:
+				"Unauthorized. User not found. Please register and login to continue",
+		})
 	}
 
 	req.auth = user

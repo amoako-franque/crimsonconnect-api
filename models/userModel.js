@@ -20,12 +20,19 @@ const userSchema = new Schema(
 			trim: true,
 			unique: true,
 		},
+
 		password: {
 			type: String,
 			required: true,
 			trim: true,
 			minLength: [8, "Please password length should not be less than 7"],
 			select: false,
+		},
+		location: {
+			type: String,
+		},
+		website: {
+			type: String,
 		},
 		bio: {
 			type: String,
