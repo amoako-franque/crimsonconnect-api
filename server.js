@@ -4,6 +4,7 @@ const morgan = require("morgan")
 const connectToDb = require("./config/dbConfig")
 const { notFound, errorHandler } = require("./middlewares/handleErrors")
 const postRouter = require("./routes/postRoutes")
+const notificationsRouter = require("./routes/notificationsRoutes")
 require("dotenv").config()
 const PORT = process.env.PORT || 4789
 // initialize express
@@ -20,6 +21,7 @@ app.use(morgan("dev"))
 // routes
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/post", postRouter)
+app.use("/api/v1/notifications", notificationsRouter)
 
 // error handler
 app.use(notFound)

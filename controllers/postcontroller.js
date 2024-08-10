@@ -1,9 +1,13 @@
 const asyncHandler = require("express-async-handler")
 const Post = require("../models/postModel")
 const User = require("../models/userModel")
+const Notification = require("../models/notificationModel")
 
+//TODO: upload file to cloudinary
 exports.createPost = asyncHandler(async (req, res, next) => {
 	const { text } = req.body
+
+	console.log(req.file)
 
 	if (!text) {
 		return res.status(400).json({ error: "Please enter text" })
@@ -161,6 +165,15 @@ exports.unlikeLike = asyncHandler(async (req, res, next) => {
 			await post.save()
 
 			//TODO: send user notification
+			// basit and rudolf
+			// basit : curretn user
+			// rudolf : user to follow
+
+			await Notification.create({
+				from: userId,
+				to: post.user,
+				notificationType: "like",
+			})
 
 			const updatedLikes = post.likes
 			res.status(200).json({

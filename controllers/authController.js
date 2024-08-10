@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler")
 const bcrypt = require("bcryptjs")
 const User = require("../models/userModel")
 const generateToken = require("../utils/generateToken")
+const Notification = require("../models/notificationModel")
 
 exports.register = asyncHandler(async (req, res, next) => {
 	// validate user input
@@ -152,7 +153,6 @@ exports.followUnfollow = asyncHandler(async (req, res, next) => {
 			// remove rudolf from users following basit
 			await User.findByIdAndUpdate(id, { $pull: { followers: userId } })
 
-			// TODO: send a notification to notify user
 			res
 				.status(200)
 				.json({ msg: `You are have unfollowed ${userToFollow.username}` })
@@ -164,6 +164,11 @@ exports.followUnfollow = asyncHandler(async (req, res, next) => {
 			await User.findByIdAndUpdate(id, { $push: { followers: userId } })
 
 			//TODO: send a notification to notify user
+			await Notification.create({
+				from: userId,
+				to: id,
+				notificationType: "follow",
+			})
 			res
 				.status(200)
 				.json({ msg: `You are now following ${userToFollow.username}` })
@@ -197,11 +202,11 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 			website,
 		} = req.body
 
-		if ((!newPassword && oldPassword) || (newPassword && !oldPassword)) {
-			return res
-				.status(400)
-				.json({ error: "Please enter new password and old password" })
-		}
+		// if ((!newPassword && oldPassword) || (newPassword && !oldPassword)) {
+		// 	return res
+		// 		.status(400)
+		// 		.json({ error: "Please enter new password and old password" })
+		// }
 
 		const user = await User.findById(userId).select("+password")
 
@@ -209,24 +214,27 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 			return res.status(404).json({ error: "User not found" })
 		}
 
-		// update user password
-		const isMatch = await bcrypt.compare(oldPassword, user.password)
+		if (newPassword && oldPassword) {
+			// update user password
+			const isMatch = await bcrypt.compare(oldPassword, user.password)
 
-		if (!isMatch) {
-			return res.status(400).json({
-				error: "Invalid credentials. Updating user password not allowed",
-			})
+			if (!isMatch) {
+				return res.status(400).json({
+					error: "Invalid credentials. Updating user password not allowed",
+				})
+			}
+
+			if (newPassword < 8) {
+				return res
+					.status(400)
+					.json({ error: "Password must be at least 8 characters" })
+			}
+
+			const salt = await bcrypt.genSalt(10)
+			const hashedPassword = await bcrypt.hash(newPassword, salt)
+			user.password = hashedPassword
 		}
 
-		if (newPassword < 8) {
-			return res
-				.status(400)
-				.json({ error: "Password must be at least 8 characters" })
-		}
-
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash(newPassword, salt)
-		user.password = hashedPassword
 		// update user data
 		user.username = username || user.username
 		user.bio = bio || user.bio
@@ -239,7 +247,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 		await user.save()
 
 		user.password = null
-		res.status(200).json({ msg: "Profile Updated", user })
+		res.status(200).json({ msg: "Profile Updated", user, userData })
 	} catch (err) {
 		next(err)
 	}

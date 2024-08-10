@@ -19,7 +19,6 @@ authRouter.post("/login", login)
 authRouter.get("/users", fetchUsers)
 authRouter.get("/me", requireSign, myProfile)
 authRouter.put("/follow-unfollow/:id", requireSign, followUnfollow)
-
 authRouter.put("/user-update", requireSign, updateProfile)
 authRouter.get("/user-suggestions", requireSign, suggestUsersToFollow)
 authRouter.get("/:username", fetchUserProfile)

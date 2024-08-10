@@ -10,9 +10,15 @@ const {
 	fetchPostsUserHasLiked,
 } = require("../controllers/postcontroller")
 const requireSign = require("../middlewares/authMiddleware")
+const imgUpload = require("../middlewares/uploadImage")
 const postRouter = express.Router()
 
-postRouter.post("/create", requireSign, createPost)
+postRouter.post(
+	"/create",
+	requireSign,
+	imgUpload.single("postImage"),
+	createPost
+)
 postRouter.get("/", requireSign, fetchPosts)
 postRouter.get("/:id", requireSign, viewPost)
 postRouter.delete("/:id", requireSign, deletePost)
