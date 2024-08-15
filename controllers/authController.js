@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs")
 const User = require("../models/userModel")
 const generateToken = require("../utils/generateToken")
 const Notification = require("../models/notificationModel")
+const uploadToCloudinary = require("../config/cloudinaryConfig")
 
 exports.register = asyncHandler(async (req, res, next) => {
 	// validate user input
@@ -42,6 +43,27 @@ exports.register = asyncHandler(async (req, res, next) => {
 	const hashPassword = await bcrypt.hash(password, salt)
 
 	try {
+		if (req.file) {
+			const imgUrl = req.file.path
+			const avatar = "crimson-connect-user-avatar"
+
+			const result = await uploadToCloudinary(imgUrl, avatar)
+
+			const user = await User.create({
+				username,
+				email,
+				password: hashPassword,
+				fullname,
+				profileImg: {
+					imgUrl: result.secure_url,
+					publicId: result.public_id,
+				},
+			})
+
+			res.status(201).json({ msg: "Registered successfully", user })
+			return
+		}
+
 		const user = await User.create({
 			username,
 			email,

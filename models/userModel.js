@@ -8,6 +8,9 @@ const userSchema = new Schema(
 			required: true,
 			unique: true,
 			trim: true,
+			minLength: [3, "Username length should be greater than 3"],
+			maxLength: [15, "Username length should not be greater than 15"],
+			lowercase: true,
 		},
 		fullname: {
 			type: String,
@@ -19,6 +22,7 @@ const userSchema = new Schema(
 			required: true,
 			trim: true,
 			unique: true,
+			lowercase: true,
 		},
 
 		password: {
@@ -90,6 +94,8 @@ const userSchema = new Schema(
 	},
 	{ timestamps: true }
 )
+
+// create indexes
 
 const User = mongoose.model("User", userSchema)
 

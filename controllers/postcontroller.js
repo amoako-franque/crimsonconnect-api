@@ -2,12 +2,11 @@ const asyncHandler = require("express-async-handler")
 const Post = require("../models/postModel")
 const User = require("../models/userModel")
 const Notification = require("../models/notificationModel")
+const uploadToCloudinary = require("../config/cloudinaryConfig")
 
 //TODO: upload file to cloudinary
 exports.createPost = asyncHandler(async (req, res, next) => {
 	const { text } = req.body
-
-	console.log(req.file)
 
 	if (!text) {
 		return res.status(400).json({ error: "Please enter text" })
@@ -23,11 +22,30 @@ exports.createPost = asyncHandler(async (req, res, next) => {
 
 	try {
 		//TODO: store post image in cloudinary
+		// check if there is a file to upload
+
+		if (req.file) {
+			const imgUrl = req.file.path
+			const postImg = "crimson-connect-posts-images"
+
+			const result = await uploadToCloudinary(imgUrl, postImg)
+
+			const post = await Post.create({
+				text,
+				user: userId,
+				postImg: {
+					imgUrl: result.secure_url,
+					publicId: result.public_id,
+				},
+			})
+
+			res.status(201).json({ msg: "Post created", post })
+			return
+		}
 		const post = await Post.create({
 			text,
 			user: userId,
 		})
-
 		res.status(201).json({ msg: "Post created", post })
 	} catch (error) {
 		next(error)
@@ -85,7 +103,7 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
 				.json({ error: "Unauthorized. You can only delete your own posts" })
 		}
 
-		//TODO: delete post image from database
+		//TODO: delete post image from cloudinary database
 
 		await Post.findByIdAndDelete(id)
 

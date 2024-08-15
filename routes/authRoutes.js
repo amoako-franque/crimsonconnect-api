@@ -11,10 +11,11 @@ const {
 	searchUser,
 } = require("../controllers/authController")
 const requireSign = require("../middlewares/authMiddleware")
+const imgUpload = require("../middlewares/uploadImage")
 const authRouter = express.Router()
 
 // http://localhost:4789/api/v1/auth/register :
-authRouter.post("/register", register)
+authRouter.post("/register", imgUpload.single("avatar"), register)
 authRouter.post("/login", login)
 authRouter.get("/users", fetchUsers)
 authRouter.get("/me", requireSign, myProfile)
