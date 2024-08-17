@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const mongoosePaginate = require("mongoose-paginate-v2")
 const Schema = mongoose.Schema
 
 const postSchema = new Schema(
@@ -41,5 +42,12 @@ const postSchema = new Schema(
 	{ timestamps: true }
 )
 
+postSchema.method("toJSON", function () {
+	const { __v, _id, ...object } = this.toObject()
+	object.id = _id
+	return object
+})
+
+postSchema.plugin(mongoosePaginate)
 const Post = mongoose.model("Post", postSchema)
 module.exports = Post

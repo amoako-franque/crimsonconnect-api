@@ -54,17 +54,44 @@ exports.createPost = asyncHandler(async (req, res, next) => {
 
 // write a controller to fetch all posts. ensure that only logged in users can view posts
 exports.fetchPosts = asyncHandler(async (req, res, next) => {
-	try {
-		const posts = await Post.find().populate({
-			path: "comments.user",
-			select: "-password",
-		})
-		// .populate({
-		// 	path: "user",
-		// 	select: "-password",
-		// })
+	const user = req.auth
 
-		res.status(200).json({ posts, total_posts: posts.length })
+	// limit size page
+	const { size, page, searchTerm } = req.query
+
+	user.searchHistory.push(searchTerm)
+
+	await user.save()
+
+	// search term
+
+	const search = searchTerm
+		? {
+				text: { $regex: searchTerm, $options: "i" },
+		  }
+		: {}
+
+	const limit = size ? +size : 4
+	const offset = page ? page * limit : 0
+
+	const options = {
+		offset,
+		limit,
+	}
+
+	try {
+		// const posts = await Post.find().skip(2).limit(req.query.limit)
+		await Post.paginate(search, options).then((data) => {
+			return res.json(data)
+		})
+
+		// if (!posts) {
+		// 	return res.status(404).json({
+		// 		error: "No posts found. Please add posts to view it on your timeline",
+		// 	})
+		// }
+
+		// res.status(200).json({ posts, total_posts:  })
 	} catch (error) {
 		next(error)
 	}
@@ -136,8 +163,6 @@ exports.comment = asyncHandler(async (req, res, next) => {
 			user: userId,
 			comment: text,
 		}
-
-		console.log(comment)
 
 		post.comments.push(comment)
 

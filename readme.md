@@ -32,3 +32,43 @@ This API is built with NodeJS, Express and Mongodb. registered users can login,c
   - CLOUD_NAME=
   - CLOUD_API_KEY=
   - CLOUD_API_SECRET=
+
+
+# Docs
+- [API Documentation](https://documenter.getpostman.com/view/11811116/Tz)
+- [API Endpoints](https://documenter.getpostman.com/view/11811116/T)
+
+
+## Documentation
+LOgin Routes
+- POST /login http://localhost:4390/api/v1/login
+  ```js
+  {
+    "email": "user@example.com",
+    "password": "password"
+    or
+    "username": "username",
+    "password": "password"
+  }
+  ```
+- POST /register http://localhost:4390/api/v1/register
+```json
+register data:
+{
+  "name": "John Doe",
+  "email": "user@example.com",
+  "password": "password",
+  "username": "username"
+}
+response :{
+  "message": "User created successfully",
+  "user": {
+    "name": "John Doe",
+    "email": "user@example.com",
+  }
+}
+
+error:{
+  "message": "User already exists",
+}
+```
