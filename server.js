@@ -18,6 +18,10 @@ app.use(express.json()) // parse req.body data
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan("dev"))
 
+app.get("/", (req, res) => {
+	res.send("/readme.md")
+})
+
 // routes
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/post", postRouter)
