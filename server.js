@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(morgan("dev"))
 
 app.get("/", (req, res) => {
-	res.send("/readme.md")
+	res.send("Welcome to Crimson Connect API. Check the docs to use the API")
 })
 
 // routes
